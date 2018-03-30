@@ -1,0 +1,95 @@
+@startuml
+package service{
+    class MovieUserRegisterService{
+    void register()
+    }
+    class PremiumOptionEngagementService{
+    void engagement()
+    }
+    class NoticeService{
+    void send()
+    }
+}
+package domain{
+package movie{
+package movie_register_user{
+        class MovieRegisterUserEntity {
+            movieRegisterUserId: MovieRegisterUserId
+            registrationDate: RegistrationDate
+            premiumOption: Option<PremiumOption>
+            contactInformation: ContactInformation
+            introductionCode: Option<IntroductionCode>
+        }
+        class MovieRegisterUserId{
+            value: String
+            boolean canEngagementPremiumOption()
+        }
+        class RegistrationDate{
+            value: LocalDate
+            boolean isEngagementOneYear()
+        }
+        class PremiumOption{
+            optionNumber: OptionNumber
+        }
+        class OptionNumber{
+            value: String
+        }
+        interface ContactInformation{
+
+        }
+        class SMS implements ContactInformation{
+            phoneNumber: PhoneNumber
+        }
+        class PhoneNumber{
+            value: String
+        }
+        class Mail implements ContactInformation{
+            mailAddress: MailAddress
+        }
+        class MailAddress{
+            value: String
+        }
+        class MovieUserRepository{
+        MovieRegisterUserEntity refer(MovieRegisterUserId userId)
+        void register(Option<PremiumOption> premiumOption)
+        void engagementPremiumOption(MovieRegisterUserId userId)
+        void send(MovieRegisterUserEntity movieRegisterUserEntity)
+        }
+        MovieRegisterUserEntity -down-|> MovieRegisterUserId
+        MovieRegisterUserEntity -down-|> RegistrationDate
+        MovieRegisterUserEntity -down-|> PremiumOption
+        MovieRegisterUserEntity "1" o-- "0..1" PremiumOption
+        MovieRegisterUserEntity -down-|> ContactInformation
+        SMS -down-|> PhoneNumber
+        Mail -down-|> MailAddress
+        PremiumOption -down-|> OptionNumber
+    }
+
+    package introduction_code{
+        class IntroductionCode{
+            premiumOptionIntroductionCode: PremiumOptionIntroductionCode
+            introductionCodeUseState: IntroductionCodeUseState
+
+        }
+        class PremiumOptionIntroductionCode {
+            value: String
+        }
+        enum IntroductionCodeUseState{
+            USE,
+            NOT_USE
+            boolean isValidIntroductionCode()
+        }
+    }
+}
+
+    MovieRegisterUserEntity -down-|> IntroductionCode
+    MovieRegisterUserEntity "1" o-- "0..1" IntroductionCode
+    IntroductionCode -down-|> PremiumOptionIntroductionCode
+    IntroductionCode -down-|> IntroductionCodeUseState
+}
+MovieUserRegisterService -down-|> MovieUserRepository
+PremiumOptionEngagementService -down-|> MovieUserRepository
+NoticeService -down-|> MovieUserRepository
+
+@enduml
+
