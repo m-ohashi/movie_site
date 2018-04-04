@@ -76,6 +76,27 @@ package movie_register_user{
         Mail .down.> MailAddress
         PremiumOption .down.> OptionNumber
     }
+
+    package notification{
+            class Notification{
+                NotificationTo notificationTo
+                NotificationText notificationText
+            }
+            class NotificationTo {
+                String value
+            }
+
+            class NotificationText {
+                String value
+            }
+
+            MailAddress .down.> NotificationTo
+            PhoneNumber .down.> NotificationTo
+            Notification .down.> NotificationTo
+            Notification .down.> NotificationText
+            MovieRegisterUserEntity .down.> Notification
+        }
+
     package introduction_code{
         class IntroductionCode{
             PremiumOptionIntroductionCode premiumOptionIntroductionCode
