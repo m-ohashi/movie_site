@@ -18,22 +18,22 @@ PremiumOptionEngageService .right.> NoticeService
 package domain{
 package movie{
 package movie_register_user{
-        class MovieRegisterUserEntity <<Entity>> {
+        class RegisteredUserEntity <<Entity>> {
             UserId userId
             RegistrationDate registrationDate
             Option<PremiumOption> premiumOption
-            ContactInformation contactInformation
+            ContactAddress contactAddress
             Option<IntroductionCode> introductionCode
 
+            + boolean canEngagePremiumOption()
             + Notification createNotification()
         }
         class UserId <<Key>>{
             String value
-            + boolean canEngagePremiumOption()
         }
         class RegistrationDate{
             LocalDate value
-            + boolean isPastOneYearStartedEngagement()
+            + boolean isOneYearPassedSinceRegisterDate()
         }
         class PremiumOption{
             OptionNumber optionNumber
@@ -41,7 +41,7 @@ package movie_register_user{
         class OptionNumber{
             String value
         }
-        class ContactInformation{
+        interface ContactAddress{
 
         }
         class SMS {
@@ -61,17 +61,17 @@ package movie_register_user{
         interface MovieUserRepository{
         + MovieRegisterUserEntity refer(UserId userId)
         + OptionNumber engagePremiumOption(UserId userId)
-        + void send(ContactInformation contactInformation, OptionNumber optionNumber)
+        + void send(Notification notification)
         }
         MovieRegisterUserEntity .down.> UserId
         MovieRegisterUserEntity .down.> RegistrationDate
         MovieRegisterUserEntity .down.> PremiumOption
         MovieRegisterUserEntity "1" o-- "0..1" PremiumOption
-        MovieRegisterUserEntity .down.> ContactInformation
-        ContactInformation .down.> SMS
-        ContactInformation "1" o-- "0..1" SMS
-        ContactInformation .down.> Mail
-        ContactInformation "1" o-- "0..1" Mail
+        MovieRegisterUserEntity .down.> ContactAddress
+        ContactAddress .down.> SMS
+        ContactAddress "1" o-- "0..1" SMS
+        ContactAddress .down.> Mail
+        ContactAddress "1" o-- "0..1" Mail
         SMS .down.> PhoneNumber
         Mail .down.> MailAddress
         PremiumOption .down.> OptionNumber
