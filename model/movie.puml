@@ -17,7 +17,7 @@ OptionEngageApi .down.> PremiumOptionEngageService
 PremiumOptionEngageService .right.> NoticeService
 package domain{
 package movie{
-package movie_register_user{
+
         class RegisteredUserEntity <<Entity>> {
             UserId userId
             RegistrationDate registrationDate
@@ -61,7 +61,6 @@ package movie_register_user{
         interface MovieUserRepository{
         + RegisteredUserEntity refer(UserId userId)
         + OptionNumber engagePremiumOption(UserId userId)
-        + void send(Notification notification)
         }
         RegisteredUserEntity .down.> UserId
         RegisteredUserEntity .down.> RegistrationDate
@@ -69,13 +68,11 @@ package movie_register_user{
         RegisteredUserEntity "1" o-- "0..1" PremiumOption
         RegisteredUserEntity .down.> ContactAddress
         ContactAddress .down.> SMS
-        ContactAddress "1" o-- "0..1" SMS
         ContactAddress .down.> Mail
-        ContactAddress "1" o-- "0..1" Mail
         SMS .down.> PhoneNumber
         Mail .down.> MailAddress
         PremiumOption .down.> OptionNumber
-    }
+        }
 
     package notification{
             class Notification{
@@ -90,11 +87,15 @@ package movie_register_user{
                 String value
             }
 
+            interface NoticeRepository {
+                + void send(Notification notification)
+            }
+
             MailAddress .down.> NotificationTo
             PhoneNumber .down.> NotificationTo
             Notification .down.> NotificationTo
             Notification .down.> NotificationText
-            MovieRegisterUserEntity .down.> Notification
+            RegisteredUserEntity .down.> Notification
         }
 
     package introduction_code{
@@ -111,17 +112,17 @@ package movie_register_user{
             + boolean isUnused()
         }
     }
-}
+
 
     MovieUserRepository .down.> UserId
-    MovieUserRepository .down.> MovieRegisterUserEntity
-    MovieRegisterUserEntity .down.> IntroductionCode
-    MovieRegisterUserEntity "1" o-- "0..1" IntroductionCode
+    MovieUserRepository .down.> RegisteredUserEntity
+    RegisteredUserEntity .down.> IntroductionCode
+    RegisteredUserEntity "1" o-- "0..1" IntroductionCode
     IntroductionCode .down.> PremiumOptionIntroductionCode
     IntroductionCode .down.> IntroductionCodeUseState
 }
 PremiumOptionEngageService .down.> MovieUserRepository
-NoticeService .down.> MovieUserRepository
+NoticeService .down.> NoticeRepository
 
 @enduml
 
