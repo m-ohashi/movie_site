@@ -59,15 +59,15 @@ package movie_register_user{
             + {static} NotificationTo createNotificationTo()
         }
         interface MovieUserRepository{
-        + MovieRegisterUserEntity refer(UserId userId)
+        + RegisteredUserEntity refer(UserId userId)
         + OptionNumber engagePremiumOption(UserId userId)
         + void send(Notification notification)
         }
-        MovieRegisterUserEntity .down.> UserId
-        MovieRegisterUserEntity .down.> RegistrationDate
-        MovieRegisterUserEntity .down.> PremiumOption
-        MovieRegisterUserEntity "1" o-- "0..1" PremiumOption
-        MovieRegisterUserEntity .down.> ContactAddress
+        RegisteredUserEntity .down.> UserId
+        RegisteredUserEntity .down.> RegistrationDate
+        RegisteredUserEntity .down.> PremiumOption
+        RegisteredUserEntity "1" o-- "0..1" PremiumOption
+        RegisteredUserEntity .down.> ContactAddress
         ContactAddress .down.> SMS
         ContactAddress "1" o-- "0..1" SMS
         ContactAddress .down.> Mail
