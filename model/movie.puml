@@ -15,8 +15,36 @@ package service{
 }
 OptionEngageApi .down.> PremiumOptionEngageService
 PremiumOptionEngageService .right.> NoticeService
-package domain{
-package movie{
+package domain {
+package user {
+    class UserId <<Key>>{
+                String value
+    }
+    class RegistrationDate{
+        LocalDate value
+        + boolean isOneYearPassedSinceRegisterDate()
+    }
+    interface ContactAddress{
+                + NotificationTo createNotificationTo()
+    }
+    class Sms {
+        PhoneNumber phoneNumber
+        + NotificationTo createNotificationTo()
+    }
+    class PhoneNumber{
+        String value
+        + NotificationTo createNotificationTo()
+    }
+    class Mail {
+        MailAddress mailAddress
+        + NotificationTo createNotificationTo()
+    }
+    class MailAddress{
+        String value
+        + NotificationTo createNotificationTo()
+    }
+}
+package movie {
 
         class RegisteredUserEntity <<Entity>> {
             UserId userId
@@ -28,38 +56,16 @@ package movie{
             + boolean canEngagePremiumOption()
             + Notification createNotification()
         }
-        class UserId <<Key>>{
-            String value
-        }
-        class RegistrationDate{
-            LocalDate value
-            + boolean isOneYearPassedSinceRegisterDate()
-        }
+
         class PremiumOption{
             OptionNumber optionNumber
         }
         class OptionNumber{
             String value
         }
-        interface ContactAddress{
 
-        }
-        class SMS {
-            PhoneNumber phoneNumber
-        }
-        class PhoneNumber{
-            String value
-            + {static} NotificationTo createNotificationTo()
-        }
-        class Mail {
-            MailAddress mailAddress
-        }
-        class MailAddress{
-            String value
-            + {static} NotificationTo createNotificationTo()
-        }
-        interface MovieUserRepository{
-        + RegisteredUserEntity refer(UserId userId)
+        interface MovieUserRepository {
+        + RegisteredUserEntity referByUserId(UserId userId)
         + OptionNumber engagePremiumOption(UserId userId)
         }
         RegisteredUserEntity .down.> UserId
@@ -67,9 +73,9 @@ package movie{
         RegisteredUserEntity .down.> PremiumOption
         RegisteredUserEntity "1" o-- "0..1" PremiumOption
         RegisteredUserEntity .down.> ContactAddress
-        ContactAddress .down.> SMS
+        ContactAddress .down.> Sms
         ContactAddress .down.> Mail
-        SMS .down.> PhoneNumber
+        Sms .down.> PhoneNumber
         Mail .down.> MailAddress
         PremiumOption .down.> OptionNumber
         }
@@ -88,7 +94,7 @@ package movie{
             }
 
             interface NoticeRepository {
-                + void send(Notification notification)
+                + void sendNotification(Notification notification)
             }
 
             MailAddress .down.> NotificationTo
