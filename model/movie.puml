@@ -1,13 +1,13 @@
 @startuml
 package api{
     class OptionEngageApi{
-        + engage(UserId userId)
+        + engage(UserId userId, IntroductionCode introductionCode)
     }
 }
 package service{
 
     class PremiumOptionEngageService{
-    + void engage(UserId userId)
+    + void engage(UserId userId, IntroductionCode introductionCode)
     }
     class NoticeService{
     + void send(Notification notification)
@@ -15,6 +15,7 @@ package service{
 }
 OptionEngageApi .down.> PremiumOptionEngageService
 PremiumOptionEngageService .right.> NoticeService
+
 package domain {
 package user {
     class UserId <<Key>>{
@@ -44,41 +45,45 @@ package user {
         + NotificationTo createNotificationTo()
     }
 }
-package movie {
+package new_premium_option_application {
 
-        class RegisteredUserEntity <<Entity>> {
+        class NewPremiumOptionApplyingUserEntity <<Entity>> {
             UserId userId
             RegistrationDate registrationDate
-            Option<PremiumOption> premiumOption
             ContactAddress contactAddress
-            Option<IntroductionCode> introductionCode
 
             + boolean canEngagePremiumOption()
             + Notification createNotification()
         }
+        interface NewPremiumOptionApplyingUserRepository {
+        + NewPremiumOptionApplyingUserEntity referByUserId(UserId userId)
+        }
+        NewPremiumOptionApplyingUserEntity .down.> UserId
+        NewPremiumOptionApplyingUserEntity .down.> RegistrationDate
 
-        class PremiumOption{
-            OptionNumber optionNumber
-        }
-        class OptionNumber{
-            String value
-        }
-
-        interface MovieUserRepository {
-        + RegisteredUserEntity referByUserId(UserId userId)
-        + OptionNumber engagePremiumOption(UserId userId)
-        }
-        RegisteredUserEntity .down.> UserId
-        RegisteredUserEntity .down.> RegistrationDate
-        RegisteredUserEntity .down.> PremiumOption
-        RegisteredUserEntity "1" o-- "0..1" PremiumOption
-        RegisteredUserEntity .down.> ContactAddress
+        NewPremiumOptionApplyingUserEntity .down.> ContactAddress
         ContactAddress .down.> Sms
         ContactAddress .down.> Mail
         Sms .down.> PhoneNumber
         Mail .down.> MailAddress
-        PremiumOption .down.> OptionNumber
+
         }
+
+    package premium_option {
+        class PremiumOption{
+            PremiumOptionNumber PremiumOptionNumber
+        }
+        
+        class PremiumOptionNumber{
+            String value
+        }
+        interface PremiumOptionRepository {
+        + PremiumOptionNumber engage(UserId userId)
+        }
+    }
+    PremiumOption .down.> PremiumOptionNumber
+    PremiumOptionRepository ..> UserId
+    PremiumOptionRepository ..> PremiumOptionNumber
 
     package notification{
             class Notification{
@@ -101,7 +106,7 @@ package movie {
             PhoneNumber .down.> NotificationTo
             Notification .down.> NotificationTo
             Notification .down.> NotificationText
-            RegisteredUserEntity .down.> Notification
+            NewPremiumOptionApplyingUserEntity .down.> Notification
         }
 
     package introduction_code{
@@ -118,17 +123,19 @@ package movie {
             + boolean isUnused()
         }
     }
+    PremiumOptionEngageService .down.> IntroductionCode
 
 
-    MovieUserRepository .down.> UserId
-    MovieUserRepository .down.> RegisteredUserEntity
-    RegisteredUserEntity .down.> IntroductionCode
-    RegisteredUserEntity "1" o-- "0..1" IntroductionCode
+    NewPremiumOptionApplyingUserRepository .down.> UserId
+    NewPremiumOptionApplyingUserRepository .down.> NewPremiumOptionApplyingUserEntity
+
     IntroductionCode .down.> PremiumOptionIntroductionCode
     IntroductionCode .down.> IntroductionCodeUseState
 }
-PremiumOptionEngageService .down.> MovieUserRepository
+PremiumOptionEngageService .down.> NewPremiumOptionApplyingUserRepository
 NoticeService .down.> NoticeRepository
+NoticeRepository .left.> Notification
+PremiumOptionEngageService .down.> PremiumOptionRepository
 
 @enduml
 
