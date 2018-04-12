@@ -8,12 +8,18 @@ package service{
     class PremiumOptionEngageService{
     + void engage(UserId userId, IntroductionCode introductionCode)
     }
+
+    class PremiumOptionEngagementCheckService {
+        + Validation<, NewPremiumOptionApplyingUserEntity> check(NewPremiumOptionApplyingUserEntity newPremiumOptionApplyingUserEntity,Option<PremiumOption> premiumOption,IntroductionCode introductionCode)
+    }
+
     class NoticeService{
     + void send(Notification notification)
     }
 }
 OptionEngageApi .down.> PremiumOptionEngageService
 PremiumOptionEngageService .right.> NoticeService
+PremiumOptionEngageService .left.> PremiumOptionEngagementCheckService
 
 package domain {
 package user {
@@ -57,6 +63,11 @@ package new_premium_option_application {
         interface NewPremiumOptionApplyingUserRepository {
         + NewPremiumOptionApplyingUserEntity referByUserId(UserId userId)
         }
+        enum ImpossibleNewPremiumOptionApplyingError{
+        OneYearNotPassedSinceRegisterDate,
+        PremiumOptionAlreadyEngaged,
+        IntroductionCodeUsed
+        }
         NewPremiumOptionApplyingUserEntity .down.> UserId
         NewPremiumOptionApplyingUserEntity .down.> RegistrationDate
 
@@ -65,6 +76,7 @@ package new_premium_option_application {
         ContactAddress .down.> Mail
         Sms .down.> PhoneNumber
         Mail .down.> MailAddress
+        PremiumOptionEngagementCheckService .down.> ImpossibleNewPremiumOptionApplyingError
 
         }
 
