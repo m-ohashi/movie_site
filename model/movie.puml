@@ -10,7 +10,7 @@ package service{
     }
 
     class PremiumOptionEngagementCheckService {
-        + Validation<, NewPremiumOptionApplyingUserEntity> check(NewPremiumOptionApplyingUserEntity newPremiumOptionApplyingUserEntity,Option<PremiumOption> premiumOption,IntroductionCode introductionCode)
+        + Validation<ImpossibleNewPremiumOptionApplyingError, NewPremiumOptionApplyingUserEntity> check(NewPremiumOptionApplyingUserEntity newPremiumOptionApplyingUserEntity,Option<PremiumOption> premiumOption,IntroductionCode introductionCode)
     }
 
     class NoticeService{
@@ -82,20 +82,20 @@ package new_premium_option_application {
 
     package premium_option {
         class PremiumOption{
-            PremiumOptionNumber PremiumOptionNumber
+            PremiumOptionId PremiumOptionId
         }
         
-        class PremiumOptionNumber{
+        class PremiumOptionId{
             String value
         }
         interface PremiumOptionRepository {
-        + PremiumOptionNumber engage(UserId userId)
+        + PremiumOptionId engage(UserId userId)
         + Option<PremiumOption> refer(UserId userId)
         }
     }
-    PremiumOption .down.> PremiumOptionNumber
+    PremiumOption .down.> PremiumOptionId
     PremiumOptionRepository ..> UserId
-    PremiumOptionRepository ..> PremiumOptionNumber
+    PremiumOptionRepository ..> PremiumOptionId
     PremiumOptionRepository .right.>  "0..1" PremiumOption
 
 
