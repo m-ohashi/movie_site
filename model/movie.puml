@@ -5,7 +5,6 @@ package api{
     }
 }
 package service{
-
     class PremiumOptionEngageService{
     + void engage(UserId userId, IntroductionCode introductionCode)
     }
@@ -79,12 +78,17 @@ package new_premium_option_application {
         }
         interface PremiumOptionRepository {
         + PremiumOptionNumber engage(UserId userId)
+        + Option<PremiumOption> refer(UserId userId)
         }
     }
     PremiumOption .down.> PremiumOptionNumber
     PremiumOptionRepository ..> UserId
     PremiumOptionRepository ..> PremiumOptionNumber
+    PremiumOptionRepository .right.>  "0..1" PremiumOption
 
+
+
+    package notification{
     package notification{
             class Notification{
                 NotificationTo notificationTo
@@ -122,8 +126,14 @@ package new_premium_option_application {
             UNUSED
             + boolean isUnused()
         }
+
+        interface IntroductionCodeRepository {
+        IntroductionCode refer(PremiumOptionIntroductionCode premiumOptionIntroductionCode)
+        }
+        IntroductionCodeRepository .right.> IntroductionCode
+        IntroductionCodeRepository ..> PremiumOptionIntroductionCode
     }
-    PremiumOptionEngageService .down.> IntroductionCode
+    PremiumOptionEngageService .down.> IntroductionCodeRepository
 
 
     NewPremiumOptionApplyingUserRepository .down.> UserId
