@@ -10,7 +10,7 @@ package service{
     }
 
     class PremiumOptionEngagementCheckService {
-        + Validation<ImpossibleNewPremiumOptionApplyingError, NewPremiumOptionApplyingUserEntity> check(NewPremiumOptionApplyingUserEntity newPremiumOptionApplyingUserEntity,Option<PremiumOption> premiumOption,IntroductionCode introductionCode)
+        + Validation<ImpossibleNewPremiumOptionApplyingError, NewPremiumOptionApplyingUserEntity> check(UserId userId, IntroductionCode introductionCode)
     }
 
     class NoticeService{
