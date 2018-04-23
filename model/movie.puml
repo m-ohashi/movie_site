@@ -10,7 +10,7 @@ package service{
     }
 
     class PremiumOptionEngagementCheckService {
-        + Validation<ImpossibleNewPremiumOptionApplyingError, NewPremiumOptionApplyingUserEntity> check(UserId userId, IntroductionCode introductionCode)
+        + Either<ImpossibleNewPremiumOptionApplyingError, NewPremiumOptionApplyingUserEntity> check(UserId userId, IntroductionCode introductionCode)
     }
 
     class NoticeService{
@@ -33,7 +33,7 @@ package user {
     interface ContactAddress{
                 + NotificationTo createNotificationTo()
     }
-    class Sms {
+    class Sms implements ContactAddress{
         PhoneNumber phoneNumber
         + NotificationTo createNotificationTo()
     }
@@ -41,7 +41,7 @@ package user {
         String value
         + NotificationTo createNotificationTo()
     }
-    class Mail {
+    class Mail implements ContactAddress {
         MailAddress mailAddress
         + NotificationTo createNotificationTo()
     }
@@ -58,33 +58,42 @@ package new_premium_option_application {
             ContactAddress contactAddress
 
             + boolean canEngagePremiumOption()
-            + Notification createNotification()
+            + Notification createNotification(PremiumOptionId premiumOptionId)
+            - NotificationTo createNotificationTo()
         }
+
         interface NewPremiumOptionApplyingUserRepository {
         + NewPremiumOptionApplyingUserEntity referByUserId(UserId userId)
         }
+
         enum ImpossibleNewPremiumOptionApplyingError{
         OneYearNotPassedSinceRegisterDate,
         PremiumOptionAlreadyEngaged,
         IntroductionCodeUsed
         }
+
+        class NewPremiumOptionApplyingNotificationText {
+        - UserId
+        - PremiumOptionId
+        + NotificationText createNotificationText()
+        }
+
         NewPremiumOptionApplyingUserEntity .down.> UserId
         NewPremiumOptionApplyingUserEntity .down.> RegistrationDate
 
         NewPremiumOptionApplyingUserEntity .down.> ContactAddress
-        ContactAddress .down.> Sms
-        ContactAddress .down.> Mail
         Sms .down.> PhoneNumber
         Mail .down.> MailAddress
         PremiumOptionEngagementCheckService .down.> ImpossibleNewPremiumOptionApplyingError
-
+        NewPremiumOptionApplyingNotificationText .down.> UserId
+        NewPremiumOptionApplyingUserEntity .up.> NewPremiumOptionApplyingNotificationText
         }
 
     package premium_option {
         class PremiumOption{
             PremiumOptionId PremiumOptionId
         }
-        
+
         class PremiumOptionId{
             String value
         }
@@ -94,9 +103,11 @@ package new_premium_option_application {
         }
     }
     PremiumOption .down.> PremiumOptionId
-    PremiumOptionRepository ..> UserId
-    PremiumOptionRepository ..> PremiumOptionId
+    PremiumOptionRepository .down.> UserId
+    PremiumOptionRepository .down.> PremiumOptionId
     PremiumOptionRepository .right.>  "0..1" PremiumOption
+    NewPremiumOptionApplyingNotificationText .down.> PremiumOptionId
+    NewPremiumOptionApplyingUserEntity .left.> PremiumOptionId
 
 
 
@@ -123,6 +134,7 @@ package new_premium_option_application {
             Notification .down.> NotificationTo
             Notification .down.> NotificationText
             NewPremiumOptionApplyingUserEntity .down.> Notification
+            NewPremiumOptionApplyingNotificationText .down.> Notification
         }
 
     package introduction_code{
@@ -160,4 +172,3 @@ NoticeRepository .left.> Notification
 PremiumOptionEngageService .down.> PremiumOptionRepository
 
 @enduml
-
