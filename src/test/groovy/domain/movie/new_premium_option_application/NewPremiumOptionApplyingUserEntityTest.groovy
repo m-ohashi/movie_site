@@ -38,10 +38,19 @@ class NewPremiumOptionApplyingUserEntityTest extends Specification {
 
         expect:
         entity.createNotification(premiumOptionId) == new Notification(
-                new NotificationTo("abc12345"),
+                new NotificationTo("hoge@foo.com"),
                 new NotificationText(
                         "ようこそabc12345さん、契約したオプション番号は、1です"
                 )
         )
+    }
+
+    def "createNotificationTo" (){
+        setup:
+        RegistrationDate registrationDate = new RegistrationDate(LocalDate.of(2017, 01, 01))
+        NewPremiumOptionApplyingUserEntity entity = new NewPremiumOptionApplyingUserEntity(userId, registrationDate, contactAddress)
+
+        expect:
+        entity.createNotificationTo() == new NotificationTo("hoge@foo.com")
     }
 }
