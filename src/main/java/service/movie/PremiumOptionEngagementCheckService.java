@@ -9,11 +9,13 @@ import domain.movie.premium_option.PremiumOptionRepository;
 import domain.movie.user.UserId;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 public class PremiumOptionEngagementCheckService {
 
-    private NewPremiumOptionApplyingUserRepository newPremiumOptionApplyingUserRepository;
-    private PremiumOptionRepository premiumOptionRepository;
+    private final NewPremiumOptionApplyingUserRepository newPremiumOptionApplyingUserRepository;
+    private final PremiumOptionRepository premiumOptionRepository;
 
     public Either<ImpossibleNewPremiumOptionApplyingError, NewPremiumOptionApplyingUserEntity> check(UserId userId, IntroductionCode introductionCode) {
 
@@ -29,7 +31,7 @@ public class PremiumOptionEngagementCheckService {
             return Either.left(ImpossibleNewPremiumOptionApplyingError.PREMIUM_OPTION_ALREADY_ENGAGED);
         }
 
-        if(introductionCode.getIntroductionCodeUseState().isUnused()) {
+        if(!introductionCode.getIntroductionCodeUseState().isUnused()) {
             return Either.left(ImpossibleNewPremiumOptionApplyingError.INTRODUCTION_CODE_USED);
         }
 

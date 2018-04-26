@@ -5,13 +5,15 @@ import domain.movie.new_premium_option_application.NewPremiumOptionApplyingUserE
 import domain.movie.premium_option.PremiumOptionId;
 import domain.movie.premium_option.PremiumOptionRepository;
 import domain.movie.user.UserId;
+import lombok.AllArgsConstructor;
 
 import java.util.function.Supplier;
 
+@AllArgsConstructor
 public class PremiumOptionEngageService {
-    private PremiumOptionEngagementCheckService premiumOptionEngagementCheckService;
-    private PremiumOptionRepository premiumOptionRepository;
-    private NoticeService noticeService;
+    private final PremiumOptionEngagementCheckService premiumOptionEngagementCheckService;
+    private final PremiumOptionRepository premiumOptionRepository;
+    private final NoticeService noticeService;
 
     public void engage(UserId userId, IntroductionCode introductionCode) {
 
@@ -19,7 +21,7 @@ public class PremiumOptionEngageService {
                 .getOrElseThrow((Supplier<RuntimeException>) RuntimeException::new);
 
         PremiumOptionId premiumOptionid = premiumOptionRepository.engage(userId);
-        //インパラが作れない
+
         noticeService.send(entity.createNotification(premiumOptionid));
     }
 }
