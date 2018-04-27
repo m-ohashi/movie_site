@@ -3,6 +3,10 @@ package api{
     class OptionEngageApi{
         + engage(UserId userId, IntroductionCode introductionCode)
     }
+
+    class OptionEngagementCheckApi{
+            + check(UserId userId, IntroductionCode introductionCode)
+        }
 }
 package service{
     class PremiumOptionEngageService{
@@ -20,6 +24,7 @@ package service{
 OptionEngageApi .down.> PremiumOptionEngageService
 PremiumOptionEngageService .right.> NoticeService
 PremiumOptionEngageService .left.> PremiumOptionEngagementCheckService
+OptionEngagementCheckApi .down.> PremiumOptionEngagementCheckService
 
 package domain {
 package user {
@@ -78,6 +83,10 @@ package new_premium_option_application {
         + NotificationText createNotificationText()
         }
 
+        class NewPremiumOptionApplyingCheck {
+        + Either<ImpossibleNewPremiumOptionApplyingError, Void> check(NewPremiumOptionApplyingUserEntity newPremiumOptionApplyingUserEntity, Option<PremiumOption> premiumOption, IntroductionCode introductionCode)
+        }
+
         NewPremiumOptionApplyingUserEntity .down.> UserId
         NewPremiumOptionApplyingUserEntity .down.> RegistrationDate
 
@@ -87,6 +96,8 @@ package new_premium_option_application {
         PremiumOptionEngagementCheckService .down.> ImpossibleNewPremiumOptionApplyingError
         NewPremiumOptionApplyingNotificationText .down.> UserId
         NewPremiumOptionApplyingUserEntity .up.> NewPremiumOptionApplyingNotificationText
+        NewPremiumOptionApplyingCheck .up.> ImpossibleNewPremiumOptionApplyingError
+        PremiumOptionEngagementCheckService .down.> NewPremiumOptionApplyingCheck
         }
 
     package premium_option {
@@ -165,6 +176,9 @@ package new_premium_option_application {
 
     IntroductionCode .down.> PremiumOptionIntroductionCode
     IntroductionCode .down.> IntroductionCodeUseState
+    NewPremiumOptionApplyingCheck .right.> NewPremiumOptionApplyingUserEntity
+    NewPremiumOptionApplyingCheck .left.> PremiumOption
+    NewPremiumOptionApplyingCheck .left.> IntroductionCode
 }
 PremiumOptionEngageService .down.> NewPremiumOptionApplyingUserRepository
 NoticeService .down.> NoticeRepository
