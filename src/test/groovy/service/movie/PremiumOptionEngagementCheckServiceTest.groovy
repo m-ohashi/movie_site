@@ -22,7 +22,7 @@ import static io.vavr.control.Either.left
 
 class PremiumOptionEngagementCheckServiceTest extends Specification {
 
-    def "checkRegisterDate"() {
+    def "申込日から１年経っていないことをチェックできる"() {
         setup:
         PremiumOptionEngagementCheckService service = new PremiumOptionEngagementCheckService(
                 new NewPremiumOptionApplyingUserOneYearNotPassedSinceRegisterDateRepositoryMock(),
@@ -35,7 +35,7 @@ class PremiumOptionEngagementCheckServiceTest extends Specification {
         service.check(userId, introductionCode) == left(ONE_YEAR_NOT_PASSED_SINCE_REGISTER_DATE)
     }
 
-    def "checkPremiumOption"() {
+    def "プレミアムオプションをすでに契約していることをチェックできる"() {
         setup:
         PremiumOptionEngagementCheckService service = new PremiumOptionEngagementCheckService(
                 new NewPremiumOptionApplyingUserRepositoryMock(),
@@ -49,7 +49,7 @@ class PremiumOptionEngagementCheckServiceTest extends Specification {
 
     }
 
-    def "checkIntroductionCode"() {
+    def "紹介コードが使用済みであることがチェックできる"() {
         setup:
         PremiumOptionEngagementCheckService service = new PremiumOptionEngagementCheckService(
                 new NewPremiumOptionApplyingUserRepositoryMock(),
